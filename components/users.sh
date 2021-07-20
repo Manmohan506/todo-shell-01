@@ -1,33 +1,26 @@
 #!/bin/bash
 
-Head() {
-  echo -e "\e[1;36m ============================ $1  \e[0m"
-  echo -e "\e[1;36m ============================ $1  \e[0m" >>$LOG
-}
+source components/common.sh
 
-Stat() {
-  if [ "$1" -eq 0 ]; then
-    echo -e "\e[1;32m SUCCESS\e[0m"
-  else
-    echo -e "\e[1;31m FAILURE\e[0m"
-    echo -e "\n\e[1;33m You can refer log file fore more information, Log file Path = ${LOG}\e[0m"
-    exit 1
-  fi
-}
+OS_PREREQ
 
-OS_PREREQ() {
-  set-hostname ${COMPONENT}
-  Head "Updating APT Repos"
-  apt update &>>$LOG
-  Stat $?
-}
+Head "Install java"
+apt-get install openjdk-8-jdk -y  &>>$LOG
+Stat $?
 
-ERROR() {
-  echo -e "\e[1;31m$1\e[0m"
-}
+Head "Install maven"
+apt install maven -y &>>$LOG
+Stat $?
 
- DOWNLOAD_COMPONENT() {
-  Head "Downloading ${COMPONENT} Component"
-  curl -s -L -o /tmp/${COMPONENT}.zip "https://github.com/Manmohan506/${COMPONENT}/archive/main.zip"
-  Stat $?
-}
+
+DOWNLOAD_COMPONENT
+
+Head "Extract Downloaded Archive"
+cd /home/ubuntu && rm -rf users && unzip -o /tmp/users.zip &>>$LOG && mv users-main users  && cd users && mvn clean package &>>$LOG && mv target/users-api-0.0.1.jar users.jar
+Stat $?
+
+
+
+Head "Setup SystemD Service"
+mv /home/ubuntu/users/systemd.service /etc/systemd/system/users.service && systemctl daemon-reload && systemctl start users && systemctl enable users &>>$LOG
+Stat $?
