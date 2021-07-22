@@ -2,7 +2,7 @@
 
 source components/common.sh
 
-DOMAIN="zsdevops01.site"
+DOMAIN="zsdevops01.store"
 
 OS_PREREQ
 
