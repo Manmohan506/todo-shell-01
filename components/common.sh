@@ -1,8 +1,8 @@
 #!/bin/bash
 
 Head() {
-  echo -e "\e[1;36m xxxxxxxxxxxxxxxxxxxxxxxxxxx $1  \e[0m"
-  echo -e "\e[1;36m xxxxxxxxxxxxxxxxxxxxxxxxxxx $1  \e[0m" >>$LOG
+  echo -e "\e[1;36m ============================ $1  \e[0m"
+  echo -e "\e[1;36m ============================ $1  \e[0m" >>$LOG
 }
 
 Stat() {
@@ -17,11 +17,17 @@ Stat() {
 
 OS_PREREQ() {
   set-hostname ${COMPONENT}
-  Head "Updating Packages"
+  Head "Updating APT Repos"
   apt update &>>$LOG
   Stat $?
 }
 
 ERROR() {
   echo -e "\e[1;31m$1\e[0m"
+}
+
+ DOWNLOAD_COMPONENT() {
+  Head "Downloading ${COMPONENT} Component"
+  curl -s -L -o /tmp/${COMPONENT}.zip "https://github.com/Manmohan506/${COMPONENT}/archive/main.zip"
+  Stat $?
 }
